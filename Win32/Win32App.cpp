@@ -188,7 +188,7 @@ namespace win32
 					}
 					case ID_CONSOLE:
 					{
-						char buf[30];
+						char buf[30]{};
 						std::string httpAddr; i2p::config::GetOption("http.address", httpAddr);
 						uint16_t httpPort; i2p::config::GetOption("http.port", httpPort);
 						snprintf(buf, 30, "http://%s:%d", httpAddr.c_str(), httpPort);

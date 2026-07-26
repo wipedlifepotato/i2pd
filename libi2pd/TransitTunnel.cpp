@@ -319,7 +319,7 @@ namespace tunnel
 					return;
 				}
 				auto& noiseState = i2p::context.GetCurrentNoiseState ();
-				uint8_t replyKey[32]; // AEAD/Chacha20/Poly1305
+				uint8_t replyKey[32]{}; // AEAD/Chacha20/Poly1305
 				i2p::crypto::AESKey layerKey, ivKey; // AES
 				i2p::crypto::HKDF (noiseState.m_CK, nullptr, 0, "SMTunnelReplyKey", noiseState.m_CK);
 				memcpy (replyKey, noiseState.m_CK + 32, 32);

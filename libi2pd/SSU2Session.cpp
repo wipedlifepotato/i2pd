@@ -270,7 +270,7 @@ namespace transport
 	{
 		if (IsEstablished ())
 		{
-			uint8_t payload[20];
+			uint8_t payload[20]{};
 			size_t payloadSize = CreatePaddingBlock (payload, 20, 8);
 			SendData (payload, payloadSize, SSU2_FLAG_IMMEDIATE_ACK_REQUESTED);
 		}
@@ -695,7 +695,7 @@ namespace transport
 					break;
 				}
 				const uint8_t nonce[12] = {0};
-				uint64_t headerX[2];
+				uint64_t headerX[2]{};
 				m_Server.ChaCha20 (buf + 16, 16, i2p::context.GetSSU2IntroKey (), nonce, (uint8_t *)headerX);
 				LogPrint (eLogWarning, "SSU2: Unexpected PeerTest message SourceConnID=", connID, " DestConnID=", headerX[0]);
 				break;
@@ -785,7 +785,7 @@ namespace transport
 		// KDF for session request
 		m_NoiseState->MixHash ({ {header.buf, 16}, {headerX, 16} }); // h = SHA256(h || header)
 		m_NoiseState->MixHash (m_EphemeralKeys->GetPublicKey (), 32); // h = SHA256(h || aepk)
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		m_EphemeralKeys->Agree (m_Address->s, sharedSecret);
 		m_NoiseState->MixKey (sharedSecret);
 		// encrypt
@@ -868,11 +868,11 @@ namespace transport
 		if (header.h.flags[0] != 2) // ver
 #endif
 		{
-            LogPrint (eLogWarning, "SSU2: SessionRequest protocol version ", (int)header.h.flags[0], " is not supported");
-            return false;
+           		 LogPrint (eLogWarning, "SSU2: SessionRequest protocol version ", (int)header.h.flags[0], " is not supported");
+            		 return false;
 		}
 		const uint8_t nonce[12] = {0};
-		uint8_t headerX[48];
+		uint8_t headerX[48]{};
 		m_Server.ChaCha20 (buf + 16, 48, i2p::context.GetSSU2IntroKey (), nonce, headerX);
 		memcpy (&m_DestConnID, headerX, 8);
 		uint64_t token;
@@ -897,7 +897,7 @@ namespace transport
 		// KDF for session request
 		m_NoiseState->MixHash ( { {header.buf, 16}, {headerX, 16} } ); // h = SHA256(h || header)
 		m_NoiseState->MixHash (headerX + 16, 32); // h = SHA256(h || aepk);
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		i2p::context.GetSSU2StaticKeys ().Agree (headerX + 16, sharedSecret);
 		m_NoiseState->MixKey (sharedSecret);
 		// decrypt
@@ -954,7 +954,7 @@ namespace transport
 		auto ts = i2p::util::GetMillisecondsSinceEpoch ();
 		m_SentHandshakePacket->sendTime = ts;
 
-		uint8_t kh2[32];
+		uint8_t kh2[32]{};
 		i2p::crypto::HKDF (m_NoiseState->m_CK, nullptr, 0, "SessCreateHeader", kh2, 32); // k_header_2 = HKDF(chainKey, ZEROLEN, "SessCreateHeader", 32)
 		// fill packet
 		Header& header = m_SentHandshakePacket->header;
@@ -972,7 +972,7 @@ namespace transport
 		// KDF for SessionCreated
 		m_NoiseState->MixHash ( { {header.buf, 16}, {headerX, 16} } ); // h = SHA256(h || header)
 		m_NoiseState->MixHash (headerX + 16, 32); // h = SHA256(h || bepk);
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		m_EphemeralKeys->Agree (X, sharedSecret);
 		m_NoiseState->MixKey (sharedSecret);
 		// payload
@@ -1053,7 +1053,7 @@ namespace transport
 		Header header;
 		memcpy (header.buf, buf, 16);
 		header.ll[0] ^= CreateHeaderMask (m_Address->i, buf + (len - 24));
-		uint8_t kh2[32];
+		uint8_t kh2[32]{};
 		i2p::crypto::HKDF (m_NoiseState->m_CK, nullptr, 0, "SessCreateHeader", kh2, 32); // k_header_2 = HKDF(chainKey, ZEROLEN, "SessCreateHeader", 32)
 		header.ll[1] ^= CreateHeaderMask (kh2, buf + (len - 12));
 		if (header.h.type != eSSU2SessionCreated)
@@ -1066,12 +1066,12 @@ namespace transport
 		}
 		m_HandshakeInterval = i2p::util::GetMillisecondsSinceEpoch () - m_HandshakeInterval;
 		const uint8_t nonce[12] = {0};
-		uint8_t headerX[48];
+		uint8_t headerX[48]{};
 		m_Server.ChaCha20 (buf + 16, 48, kh2, nonce, headerX);
 		// KDF for SessionCreated
 		m_NoiseState->MixHash ( { {header.buf, 16}, {headerX, 16} } ); // h = SHA256(h || header)
 		m_NoiseState->MixHash (headerX + 16, 32); // h = SHA256(h || bepk);
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		m_EphemeralKeys->Agree (headerX + 16, sharedSecret);
 		m_NoiseState->MixKey (sharedSecret);
 		size_t offset = 64;
@@ -1125,7 +1125,7 @@ namespace transport
 		m_SentHandshakePacket.reset (new HandshakePacket);
 		m_SentHandshakePacket->sendTime = i2p::util::GetMillisecondsSinceEpoch ();
 
-		uint8_t kh2[32];
+		uint8_t kh2[32]{};
 		i2p::crypto::HKDF (m_NoiseState->m_CK, nullptr, 0, "SessionConfirmed", kh2, 32); // k_header_2 = HKDF(chainKey, ZEROLEN, "SessionConfirmed", 32)
 		// fill packet
 		Header& header = m_SentHandshakePacket->header;
@@ -1155,7 +1155,7 @@ namespace transport
 		m_NoiseState->Encrypt (i2p::context.GetSSU2StaticPublicKey (), part1, 32);
 		m_NoiseState->MixHash (part1, 48); // h = SHA256(h || ciphertext);
 		// KDF for Session Confirmed part 2
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		i2p::context.GetSSU2StaticKeys ().Agree (Y, sharedSecret);
 		m_NoiseState->MixKey (sharedSecret);
 		// Encrypt part2
@@ -1211,7 +1211,7 @@ namespace transport
 		Header header;
 		memcpy (header.buf, buf, 16);
 		header.ll[0] ^= CreateHeaderMask (i2p::context.GetSSU2IntroKey (), buf + (len - 24));
-		uint8_t kh2[32];
+		uint8_t kh2[32]{};
 		i2p::crypto::HKDF (m_NoiseState->m_CK, nullptr, 0, "SessionConfirmed", kh2, 32); // k_header_2 = HKDF(chainKey, ZEROLEN, "SessionConfirmed", 32)
 		header.ll[1] ^= CreateHeaderMask (kh2, buf + (len - 12));
 		if (header.h.type != eSSU2SessionConfirmed)
@@ -1299,7 +1299,7 @@ namespace transport
 		// KDF for Session Confirmed part 1
 		m_NoiseState->MixHash (header.buf, 16); // h = SHA256(h || header)
 		// decrypt part1
-		uint8_t S[32];
+		uint8_t S[32]{};
 		if (!m_NoiseState->Decrypt (buf + 16, S, 32))
 		{
 			LogPrint (eLogWarning, "SSU2: SessionConfirmed part 1 AEAD verification failed ");
@@ -1308,7 +1308,7 @@ namespace transport
 		}
 		m_NoiseState->MixHash (buf + 16, 48); // h = SHA256(h || ciphertext);
 		// KDF for Session Confirmed part 2 and data phase
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		m_EphemeralKeys->Agree (S, sharedSecret);
 		m_NoiseState->MixKey (sharedSecret);
 		KDFDataPhase (m_KeyDataReceive, m_KeyDataSend);
@@ -1454,7 +1454,7 @@ namespace transport
 
 	void SSU2Session::KDFDataPhase (uint8_t * keydata_ab, uint8_t * keydata_ba)
 	{
-		uint8_t keydata[64];
+		uint8_t keydata[64]{};
 		i2p::crypto::HKDF (m_NoiseState->m_CK, nullptr, 0, "", keydata); // keydata = HKDF(chainKey, ZEROLEN, "", 64)
 		// ab
 		i2p::crypto::HKDF (keydata, nullptr, 0, "HKDFSSU2DataKeys", keydata_ab); // keydata_ab = HKDF(keydata, ZEROLEN, "HKDFSSU2DataKeys", 64)
@@ -1470,7 +1470,7 @@ namespace transport
 			SetVersion (m_Address->v);
 #endif
 		Header header;
-		uint8_t h[32], payload[41];
+		uint8_t h[32]{}, payload[41]{};
 		// fill packet
 		header.h.connID = m_DestConnID; // dest id
 		RAND_bytes (header.buf + 8, 4); // random packet num
@@ -1488,7 +1488,7 @@ namespace transport
 		size_t payloadSize = 7;
 		payloadSize += CreatePaddingBlock (payload + payloadSize, 25 - payloadSize, 1);
 		// encrypt
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (be32toh (header.h.packetNum), nonce);
 		i2p::crypto::AEADChaCha20Poly1305 (payload, payloadSize, h, 32, m_Address->i, nonce, payload, payloadSize + 16, true);
 		payloadSize += 16;
@@ -1525,11 +1525,11 @@ namespace transport
 		if (header.h.flags[0] != 2) // ver
 #endif
 		{
-            LogPrint (eLogWarning, "SSU2: TokenRequest protocol version ", (int)header.h.flags[0], " is not supported");
-            return false;
+           		 LogPrint (eLogWarning, "SSU2: TokenRequest protocol version ", (int)header.h.flags[0], " is not supported");
+           		 return false;
 		}
 		uint8_t nonce[12] = {0};
-		uint8_t h[32];
+		uint8_t h[32]{};
 		memcpy (h, header.buf, 16);
 		m_Server.ChaCha20 (buf + 16, 16, i2p::context.GetSSU2IntroKey (), nonce, h + 16);
 		memcpy (&m_DestConnID, h + 16, 8);
@@ -1607,7 +1607,7 @@ namespace transport
 			return false;
 		}
 		uint8_t nonce[12] = {0};
-		uint64_t headerX[2]; // sourceConnID, token
+		uint64_t headerX[2]{}; // sourceConnID, token
 		m_Server.ChaCha20 (buf + 16, 16, m_Address->i, nonce, (uint8_t *)headerX);
 		uint64_t token = headerX[1];
 		if (token)
@@ -1666,7 +1666,7 @@ namespace transport
 			return false;
 		}
 		uint8_t nonce[12] = {0};
-		uint64_t headerX[2]; // sourceConnID, token
+		uint64_t headerX[2]{}; // sourceConnID, token
 		m_Server.ChaCha20 (buf + 16, 16, i2p::context.GetSSU2IntroKey (), nonce, (uint8_t *)headerX);
 		m_DestConnID = headerX[0];
 		// decrypt and handle payload
@@ -1746,7 +1746,7 @@ namespace transport
 			LogPrint (eLogWarning, "SSU2: Data message too short ", len);
 			return;
 		}
-		uint8_t payload[SSU2_MAX_PACKET_SIZE];
+		uint8_t payload[SSU2_MAX_PACKET_SIZE]{};
 		size_t payloadSize = len - 32;
 		uint32_t packetNum = be32toh (header.h.packetNum);
 		uint8_t nonce[12];
@@ -3212,7 +3212,7 @@ namespace transport
 		}
 		// signed data
 		auto ts = i2p::util::GetSecondsSinceEpoch ();
-		uint8_t signedData[96];
+		uint8_t signedData[96]{};
 		signedData[0] = 2; // ver
 		htobe32buf (signedData + 1, nonce);
 		htobe32buf (signedData + 5, ts);

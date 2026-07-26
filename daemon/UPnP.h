@@ -75,8 +75,8 @@ namespace transport
 
 			// For miniupnpc
 			struct UPNPDev * m_Devlist = 0;
-			char m_NetworkAddr[64];
-			char m_externalIPAddress[40];
+			char m_NetworkAddr[64]{};
+			char m_externalIPAddress[40]{}
 	};
 }
 }

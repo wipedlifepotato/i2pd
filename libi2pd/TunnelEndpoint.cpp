@@ -33,7 +33,7 @@ namespace tunnel
 			uint8_t * fragment = zero + 1;
 			// verify checksum
 			memcpy (msg->GetPayload () + TUNNEL_DATA_MSG_SIZE, msg->GetPayload () + 4, 16); // copy iv to the end
-			uint8_t hash[32];
+			uint8_t hash[32]{};
 			SHA256(fragment, TUNNEL_DATA_MSG_SIZE -(fragment - msg->GetPayload ()) + 16, hash); // payload + iv
 			if (memcmp (hash, decrypted, 4))
 			{

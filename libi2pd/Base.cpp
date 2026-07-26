@@ -58,7 +58,7 @@ namespace data
 	/*
 	* Reverse Substitution Table (built in run time)
 	*/
-	static char iT64[256];
+	static char iT64[256]; // static will be zeros
 	static int isFirstTime = 1;
 
 	/*

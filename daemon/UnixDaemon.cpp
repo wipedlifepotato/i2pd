@@ -178,7 +178,7 @@ namespace i2p
 					return false;
 				}
 
-				char pid[16];
+				char pid[16]{};
 				snprintf(pid, 16, "%d\n", getpid());
 				ftruncate(pidFH, 0);
 				if (write(pidFH, pid, strlen(pid)) < 0)

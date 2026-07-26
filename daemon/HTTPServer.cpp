@@ -102,7 +102,7 @@ namespace http {
 #else
 		localtime_r(&t, &caltime);
 #endif
-		char date[128];
+		char date[128]{};
 		snprintf(date, sizeof(date), "%02d/%02d/%d %02d:%02d:%02d.%03lld", caltime.tm_mday, caltime.tm_mon + 1, caltime.tm_year + 1900, caltime.tm_hour, caltime.tm_min, caltime.tm_sec, divTime.rem);
 		return date;
 	}
@@ -1626,7 +1626,7 @@ namespace http {
 		std::string pass; i2p::config::GetOption("http.pass", pass);
 		/* generate pass if needed */
 		if (needAuth && pass == "") {
-			uint8_t random[16];
+			uint8_t random[16]{};
 			char alnum[] = "0123456789"
 				"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				"abcdefghijklmnopqrstuvwxyz";

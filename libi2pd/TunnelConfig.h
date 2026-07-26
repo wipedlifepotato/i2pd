@@ -23,9 +23,9 @@ namespace tunnel
 		std::shared_ptr<const i2p::data::IdentityEx> ident;
 		i2p::data::IdentHash nextIdent;
 		uint32_t tunnelID, nextTunnelID;
-		uint8_t layerKey[32];
-		uint8_t ivKey[32];
-		uint8_t replyKey[32];
+		uint8_t layerKey[32]{};
+		uint8_t ivKey[32]{};
+		uint8_t replyKey[32]{};
 		bool isGateway, isEndpoint;
 
 		TunnelHopConfig * next, * prev;

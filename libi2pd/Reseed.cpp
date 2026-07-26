@@ -208,7 +208,7 @@ namespace data
 	const char SU3_MAGIC_NUMBER[]="I2Psu3";
 	int Reseeder::ProcessSU3Stream (std::istream& s)
 	{
-		char magicNumber[7];
+		char magicNumber[7]{};
 		s.read (magicNumber, 7); // magic number and zero byte 6
 		if (strcmp (magicNumber, SU3_MAGIC_NUMBER))
 		{
@@ -250,7 +250,7 @@ namespace data
 		s.seekg (12, std::ios::cur); // unused
 
 		s.seekg (versionLength, std::ios::cur); // skip version
-		char signerID[256];
+		char signerID[256]{};
 		s.read (signerID, signerIDLength); // signerID
 		signerID[signerIDLength] = 0;
 
@@ -274,7 +274,7 @@ namespace data
 					// RSA-raw
 					{
 						// calculate digest
-						uint8_t digest[64];
+						uint8_t digest[64]{};
 						SHA512 (tbs, tbsLen, digest);
 						// encrypt signature
 						BN_CTX * bnctx = BN_CTX_new ();
@@ -357,7 +357,7 @@ namespace data
 				}
 				s.read ((char *)&extraFieldLength, 2);
 				extraFieldLength = le16toh (extraFieldLength);
-				char localFileName[255];
+				char localFileName[255]{};
 				s.read (localFileName, fileNameLength);
 				localFileName[fileNameLength] = 0;
 				s.seekg (extraFieldLength, std::ios::cur);
@@ -499,7 +499,7 @@ namespace data
 			if (cert)
 			{
 				// extract issuer name
-				char name[100];
+				char name[100]{};
 				X509_NAME_oneline (X509_get_issuer_name(cert), name, 100);
 				char * cn = strstr (name, "CN=");
 				if (cn)
@@ -755,7 +755,7 @@ namespace data
 
 		// read response
 		std::stringstream rs;
-		char recv_buf[1024]; size_t l = 0;
+		char recv_buf[1024]{}; size_t l = 0;
 		do {
 			l = s.read_some (boost::asio::buffer (recv_buf, sizeof(recv_buf)), ecode);
 			if (l) rs.write (recv_buf, l);

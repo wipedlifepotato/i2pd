@@ -97,8 +97,8 @@ namespace util
 			socket.open (ep.protocol (), ec);
 			if (!ec)
 			{
-				uint8_t buf[48];// 48 bytes NTP request/response
-				memset (buf, 0, 48);
+				uint8_t buf[48]{0};// 48 bytes NTP request/response
+				//memset (buf, 0, 48);
 				htobe32buf (buf, (3 << 27) | (3 << 24)); // RFC 4330
 				size_t len = 0;
 				try
