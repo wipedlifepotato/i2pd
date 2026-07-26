@@ -46,7 +46,7 @@ namespace tunnel
 		}
 
 		// create delivery instructions
-		uint8_t di[43]; // max delivery instruction length is 43 for tunnel
+		uint8_t di[43]{}; // max delivery instruction length is 43 for tunnel
 		size_t diLen = 1;// flag
 		if (block.deliveryType != eDeliveryTypeLocal) // tunnel or router
 		{
@@ -179,7 +179,7 @@ namespace tunnel
 		uint8_t * buf = m_CurrentTunnelDataMsg->GetPayload ();
 		RAND_bytes (buf + 4, 16); // original IV
 		memcpy (payload + size, buf + 4, 16); // copy IV for checksum
-		uint8_t hash[32];
+		uint8_t hash[32]{};
 		SHA256(payload, size+16, hash);
 		memcpy (buf+20, hash, 4); // checksum
 		payload[-1] = 0; // zero

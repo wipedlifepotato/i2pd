@@ -464,7 +464,7 @@ namespace data
 		auto inbound = exploratoryPool ? exploratoryPool->GetNextInboundTunnel () : nullptr;
 		bool throughTunnels = outbound && inbound;
 
-		uint8_t randomHash[32];
+		uint8_t randomHash[32]{};
 		std::vector<i2p::tunnel::TunnelMessageBlock> msgs;
 		LogPrint (eLogInfo, "NetDbReq: Exploring new ", numDestinations, " routers ...");
 		for (int i = 0; i < numDestinations; i++)

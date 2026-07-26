@@ -157,7 +157,7 @@ namespace data
 	BlindedPublicKey::BlindedPublicKey (std::string_view b33):
 		m_SigType (0) // 0 means invalid, we can't blind DSA, set it later
 	{
-		uint8_t addr[40]; // TODO: define length from b33
+		uint8_t addr[40]{}; // TODO: define length from b33
 		size_t l = i2p::data::Base32ToByteStream (b33, addr, 40);
 		if (l < 32)
 		{
@@ -200,7 +200,7 @@ namespace data
 	std::string BlindedPublicKey::ToB33 () const
 	{
 		if (m_PublicKey.size () > 32) return ""; // assume 25519
-		uint8_t addr[35];
+		uint8_t addr[35]{};
 		uint8_t flags = 0;
 		if (m_IsClientAuth) flags |= B33_PER_CLIENT_AUTH_FLAG;
 		addr[0] = flags; // flags
@@ -226,7 +226,7 @@ namespace data
 
 	void BlindedPublicKey::GetSubcredential (const uint8_t * blinded, size_t len, uint8_t * subcredential) const
 	{
-		uint8_t credential[32];
+		uint8_t credential[32]{};
 		GetCredential (credential);
 		// subcredential = H("subcredential", credential || blindedPublicKey)
 		H ("subcredential", { {credential, 32}, {blinded, len} }, subcredential);
@@ -235,7 +235,7 @@ namespace data
 	void BlindedPublicKey::GenerateAlpha (const char * date, uint8_t * seed) const
 	{
 		uint16_t stA = htobe16 (GetSigType ()), stA1 = htobe16 (GetBlindedSigType ());
-		uint8_t salt[32];
+		uint8_t salt[32]{};
 		//seed = HKDF(H("I2PGenerateAlpha", keydata), datestring || secret, "i2pblinding1", 64)
 		H ("I2PGenerateAlpha", { {GetPublicKey (), GetPublicKeyLen ()}, {(const uint8_t *)&stA, 2}, {(const uint8_t *)&stA1, 2} }, salt);
 		i2p::crypto::HKDF (salt, (const uint8_t *)date, 8, "i2pblinding1", seed);
@@ -243,7 +243,7 @@ namespace data
 
 	size_t BlindedPublicKey::GetBlindedKey (const char * date, uint8_t * blindedKey) const
 	{
-		uint8_t seed[64];
+		uint8_t seed[64]{};
 		GenerateAlpha (date, seed);
 
 		size_t publicKeyLength = 0;
@@ -267,7 +267,7 @@ namespace data
 
 	size_t BlindedPublicKey::BlindPrivateKey (const uint8_t * priv, const char * date, uint8_t * blindedPriv, uint8_t * blindedPub) const
 	{
-		uint8_t seed[64];
+		uint8_t seed[64]{};
 		GenerateAlpha (date, seed);
 		size_t publicKeyLength = 0;
 		switch (m_SigType)
@@ -283,7 +283,7 @@ namespace data
 			break;
 			case i2p::data::SIGNING_KEY_TYPE_EDDSA_SHA512_ED25519:
 			{
-				uint8_t exp[64];
+				uint8_t exp[64]{};
 				i2p::crypto::Ed25519::ExpandPrivateKey (priv, exp);
 				i2p::crypto::GetEd25519 ()->BlindPrivateKey (exp, seed, blindedPriv, blindedPub);
 				publicKeyLength = i2p::crypto::EDDSA25519_PUBLIC_KEY_LENGTH;
@@ -310,13 +310,13 @@ namespace data
 	i2p::data::IdentHash BlindedPublicKey::GetStoreHash (const char * date) const
 	{
 		i2p::data::IdentHash hash;
-		uint8_t blinded[128];
+		uint8_t blinded[128]{};
 		size_t publicKeyLength = 0;
 		if (date)
 			publicKeyLength = GetBlindedKey (date, blinded);
 		else
 		{
-			char currentDate[9];
+			char currentDate[9]{};
 			i2p::util::GetCurrentDate (currentDate);
 			publicKeyLength = GetBlindedKey (currentDate, blinded);
 		}

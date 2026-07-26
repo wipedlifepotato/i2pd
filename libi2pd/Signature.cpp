@@ -126,7 +126,7 @@ namespace crypto
 	bool DSAVerifier::Verify (const uint8_t * buf, size_t len, const uint8_t * signature) const
 	{
 		// calculate SHA1 digest
-		uint8_t digest[20];
+		uint8_t digest[20]{};
 		SHA1 (buf, len, digest);
 		// signature
 		DSA_SIG * sig = DSA_SIG_new();
@@ -150,7 +150,7 @@ namespace crypto
 
 	void DSASigner::Sign (const uint8_t * buf, int len, uint8_t * signature) const
 	{
-		uint8_t digest[20];
+		uint8_t digest[20]{};
 		SHA1 (buf, len, digest);
 		DSA_SIG * sig = DSA_do_sign (digest, 20, m_PrivateKey);
 		const BIGNUM * r, * s;
@@ -394,7 +394,7 @@ namespace crypto
 
 			EVP_MD_CTX * ctx = EVP_MD_CTX_create ();
 			size_t l = 64;
-			uint8_t sig[64]; // temporary buffer for signature. openssl issue #7232
+			uint8_t sig[64]{}; // temporary buffer for signature. openssl issue #7232
 			EVP_DigestSignInit (ctx, NULL, NULL, NULL, m_Pkey);
 			if (!EVP_DigestSign (ctx, sig, &l, buf, len))
 				LogPrint (eLogError, "EdDSA signing failed");
@@ -417,7 +417,7 @@ namespace crypto
 		auto pkey = GetPkey ();
 		if (pkey)
 		{
-			uint8_t digest[64];
+			uint8_t digest[64]{};
 			SHA512 (buf, len, digest);
 			EVP_MD_CTX * ctx = EVP_MD_CTX_create ();
 			EVP_DigestVerifyInit_ex (ctx, NULL, NULL, NULL, NULL, pkey, EDDSA25519phParams);
@@ -440,11 +440,11 @@ namespace crypto
 		auto pkey = GetPkey ();
 		if (pkey)
 		{
-			uint8_t digest[64];
+			uint8_t digest[64]{};
 			SHA512 (buf, len, digest);
 			EVP_MD_CTX * ctx = EVP_MD_CTX_create ();
 			size_t l = 64;
-			uint8_t sig[64];
+			uint8_t sig[64]{};
 			EVP_DigestSignInit_ex (ctx, NULL, NULL, NULL, NULL, pkey, EDDSA25519phParams);
 			if (!EVP_DigestSign (ctx, sig, &l, digest, 64))
 				LogPrint (eLogError, "EdDSA signing failed");

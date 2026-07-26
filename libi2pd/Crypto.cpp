@@ -376,7 +376,7 @@ namespace crypto
 		// calculate b1
 		BN_mod_exp (b1, y, k, elgp, ctx);
 		// create m
-		uint8_t m[255];
+		uint8_t m[255]{};
 		m[0] = 0xFF;
 		memcpy (m+33, data, 222);
 		SHA256 (m+33, 222, m+1);
@@ -406,11 +406,11 @@ namespace crypto
 		// m = b*(a^x mod p) mod p
 		BN_mod_exp (x, a, x, elgp, ctx);
 		BN_mod_mul (b, b, x, elgp, ctx);
-		uint8_t m[255];
+		uint8_t m[255]{};
 		bn2buf (b, m, 255);
 		BN_CTX_end (ctx);
 		BN_CTX_free (ctx);
-		uint8_t hash[32];
+		uint8_t hash[32]{};
 		SHA256 (m + 33, 222, hash);
 		if (memcmp (m + 1, hash, 32)) // hash doesn't match, decryption failed
 			return false;
@@ -466,7 +466,7 @@ namespace crypto
 		bn2buf (y, iv, len);
 		SHA256 (keyBuf, len, shared);
 		// create buffer
-		uint8_t m[256];
+		uint8_t m[256]{};
 		m[0] = 0xFF; m[255] = 0xFF;
 		memcpy (m+33, data, 222);
 		SHA256 (m+33, 222, m+1);
@@ -504,12 +504,12 @@ namespace crypto
 			bn2buf (y, iv, len);
 			SHA256 (keyBuf, len, shared);
 			// decrypt
-			uint8_t m[256];
+			uint8_t m[256]{};
 			CBCDecryption decryption;
 			decryption.SetKey (shared);
 			decryption.Decrypt (encrypted + 258, 256, iv, m);
 			// verify and copy
-			uint8_t hash[32];
+			uint8_t hash[32]{};
 			SHA256 (m + 33, 222, hash);
 			if (!memcmp (m + 1, hash, 32))
 				memcpy (data, m + 33, 222);
@@ -630,7 +630,7 @@ namespace crypto
 
 	void TunnelEncryption::Encrypt (const uint8_t * in, uint8_t * out)
 	{
-		uint8_t iv[16];
+		uint8_t iv[16]{};
 		m_IVEncryption.Encrypt (in, iv); // iv
 		m_LayerEncryption.Encrypt (in + 16, i2p::tunnel::TUNNEL_DATA_ENCRYPTED_SIZE, iv, out + 16); // data
 		m_IVEncryption.Encrypt (iv, out); // double iv
@@ -638,7 +638,7 @@ namespace crypto
 
 	void TunnelDecryption::Decrypt (const uint8_t * in, uint8_t * out)
 	{
-		uint8_t iv[16];
+		uint8_t iv[16]{};
 		m_IVDecryption.Decrypt (in, iv); // iv
 		m_LayerDecryption.Decrypt (in + 16, i2p::tunnel::TUNNEL_DATA_ENCRYPTED_SIZE, iv, out + 16); // data
 		m_IVDecryption.Decrypt (iv, out); // double iv
@@ -744,7 +744,7 @@ namespace crypto
 
 	static void ChaCha20 (EVP_CIPHER_CTX *ctx, const uint8_t * msg, size_t msgLen, const uint8_t * key, const uint8_t * nonce, uint8_t * out)
 	{
-		uint32_t iv[4];
+		uint32_t iv[4]{};
 		iv[0] = htole32 (1); memcpy (iv + 1, nonce, 12); // counter | nonce
 		EVP_EncryptInit_ex(ctx, EVP_chacha20 (), NULL, key, (const uint8_t *)iv);
 		int outlen = 0;
@@ -791,7 +791,7 @@ namespace crypto
 		{
 			// zerolen
 			EVP_PKEY_CTX_hkdf_mode (pctx, EVP_PKEY_HKDEF_MODE_EXPAND_ONLY);
-			uint8_t tempKey[32]; unsigned int len;
+			uint8_t tempKey[32]{}; unsigned int len;
 			HMAC(EVP_sha256(), salt, 32, nullptr, 0, tempKey, &len);
 			EVP_PKEY_CTX_set1_hkdf_key (pctx, tempKey, len);
 		}
@@ -847,7 +847,7 @@ namespace crypto
 
 	bool NoiseSymmetricState::Encrypt (const uint8_t * in, uint8_t * out, size_t len)
 	{
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		if (m_N)
 		{
 			memset (nonce, 0, 4);
@@ -862,7 +862,7 @@ namespace crypto
 
 	bool NoiseSymmetricState::Decrypt (const uint8_t * in, uint8_t * out, size_t len)
 	{
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		if (m_N)
 		{
 			memset (nonce, 0, 4);

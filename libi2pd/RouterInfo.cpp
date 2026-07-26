@@ -1219,7 +1219,7 @@ namespace data
 	{
 		RefreshTimestamp ();
 		std::stringstream s;
-		uint8_t ident[1024];
+		uint8_t ident[1024]{};
 		auto identLen = privateKeys.GetPublic ()->ToBuffer (ident, 1024);
 		auto signatureLen = privateKeys.GetPublic ()->GetSignatureLen ();
 		s.write ((char *)ident, identLen);

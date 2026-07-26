@@ -571,7 +571,7 @@ namespace data
 			if (blindedKeyType == key->GetBlindedSigType ())
 			{
 				// verify blinding
-				char date[9];
+				char date[9]{};
 				i2p::util::GetDateString (m_PublishedTimestamp, date);
 				std::vector<uint8_t> blinded (blindedKeyLen);
 				key->GetBlindedKey (date, blinded.data ());
@@ -588,12 +588,12 @@ namespace data
 			}
 			// outer key
 			// outerInput = subcredential || publishedTimestamp
-			uint8_t subcredential[36];
+			uint8_t subcredential[36]{};
 			key->GetSubcredential (blindedPublicKey, blindedKeyLen, subcredential);
 			memcpy (subcredential + 32, publishedTimestamp, 4);
 			// outerSalt = outerCiphertext[0:32]
 			// keys = HKDF(outerSalt, outerInput, "ELS2_L1K", 44)
-			uint8_t keys[64]; // 44 bytes actual data
+			uint8_t keys[64]{}; // 44 bytes actual data
 			i2p::crypto::HKDF (outerCiphertext, subcredential, 36, "ELS2_L1K", keys);
 			// decrypt Layer 1
 			// outerKey = keys[0:31]
@@ -605,7 +605,7 @@ namespace data
 			// innerInput = authCookie || subcredential || publishedTimestamp
 			// innerSalt = innerCiphertext[0:32]
 			// keys = HKDF(innerSalt, innerInput, "ELS2_L2K", 44)
-			uint8_t innerInput[68];
+			uint8_t innerInput[68]{};
 			size_t authDataLen = ExtractClientAuthData (outerPlainText.data (), lenOuterPlaintext, secret, subcredential, innerInput);
 			if (authDataLen > 0)
 			{
@@ -678,11 +678,11 @@ namespace data
 				if (secret)
 				{
 					i2p::crypto::X25519Keys ck (secret, nullptr); // derive cpk_i from csk_i
-					uint8_t authInput[100];
+					uint8_t authInput[100]{};
 					ck.Agree (ephemeralPublicKey, authInput); // sharedSecret is first 32 bytes of authInput
 					memcpy (authInput + 32, ck.GetPublicKey (), 32); // cpk_i
 					memcpy (authInput + 64, subcredential, 36);
-					uint8_t okm[64]; // 52 actual data
+					uint8_t okm[64]{}; // 52 actual data
 					i2p::crypto::HKDF (ephemeralPublicKey, authInput, 100, "ELS2_XCA", okm);
 					if (!GetAuthCookie (authClients, numClients, okm, authCookie))
 						LogPrint (eLogError, "LeaseSet2: Client cookie DH not found");
@@ -703,10 +703,10 @@ namespace data
 				// calculate authCookie
 				if (secret)
 				{
-					uint8_t authInput[68];
+					uint8_t authInput[68]{};
 					memcpy (authInput, secret, 32);
 					memcpy (authInput + 32, subcredential, 36);
-					uint8_t okm[64]; // 52 actual data
+					uint8_t okm[64]{}; // 52 actual data
 					i2p::crypto::HKDF (authSalt, authInput, 68, "ELS2PSKA", okm);
 					if (!GetAuthCookie (authClients, numClients, okm, authCookie))
 						LogPrint (eLogError, "LeaseSet2: Client cookie PSK not found");
@@ -999,7 +999,7 @@ namespace data
 		m_Buffer[0] = NETDB_STORE_TYPE_ENCRYPTED_LEASESET2;
 		BlindedPublicKey blindedKey (ls->GetIdentity ());
 		auto timestamp = i2p::util::GetSecondsSinceEpoch ();
-		char date[9];
+		char date[9]{};
 		i2p::util::GetDateString (timestamp, date);
 		uint8_t blindedPriv[64], blindedPub[128]; // 64 and 128 max
 		size_t publicKeyLen = blindedKey.BlindPrivateKey (keys.GetSigningPrivateKey (), date, blindedPriv, blindedPub);
@@ -1023,18 +1023,18 @@ namespace data
 		htobe16buf (m_Buffer + offset, lenOuterCiphertext); offset += 2; // lenOuterCiphertext
 		// outerChipherText
 		// Layer 1
-		uint8_t subcredential[36];
+		uint8_t subcredential[36]{};
 		blindedKey.GetSubcredential (blindedPub, 32, subcredential);
 		htobe32buf (subcredential + 32, timestamp); // outerInput = subcredential || publishedTimestamp
 		// keys = HKDF(outerSalt, outerInput, "ELS2_L1K", 44)
-		uint8_t keys1[64]; // 44 bytes actual data
+		uint8_t keys1[64]{}; // 44 bytes actual data
 		RAND_bytes (m_Buffer + offset, 32); // outerSalt = CSRNG(32)
 		i2p::crypto::HKDF (m_Buffer + offset, subcredential, 36, "ELS2_L1K", keys1);
 		offset += 32; // outerSalt
 		uint8_t * outerPlainText = m_Buffer + offset;
 		m_Buffer[offset] = layer1Flags; offset++; // layer 1 flags
 		// auth data
-		uint8_t innerInput[68];	// authCookie || subcredential || publishedTimestamp
+		uint8_t innerInput[68]{};	// authCookie || subcredential || publishedTimestamp
 		if (layer1Flags)
 		{
 			RAND_bytes (innerInput, 32); // authCookie
@@ -1043,7 +1043,7 @@ namespace data
 		}
 		// Layer 2
 		// keys = HKDF(outerSalt, outerInput, "ELS2_L2K", 44)
-		uint8_t keys2[64]; // 44 bytes actual data
+		uint8_t keys2[64]{}; // 44 bytes actual data
 		RAND_bytes (m_Buffer + offset, 32); // innerSalt = CSRNG(32)
 		if (layer1Flags)
 		{
@@ -1087,13 +1087,13 @@ namespace data
 			ek.GenerateKeys (); // esk and epk
 			memcpy (authData, ek.GetPublicKey (), 32); authData += 32; // epk
 			htobe16buf (authData, authKeys->size ()); authData += 2; // num clients
-			uint8_t authInput[100]; // sharedSecret || cpk_i || subcredential || publishedTimestamp
+			uint8_t authInput[100]{}; // sharedSecret || cpk_i || subcredential || publishedTimestamp
 			memcpy (authInput + 64, subcredential, 36);
 			for (auto& it: *authKeys)
 			{
 				ek.Agree (it, authInput); // sharedSecret = DH(esk, cpk_i)
 				memcpy (authInput + 32, it, 32);
-				uint8_t okm[64]; // 52 actual data
+				uint8_t okm[64]{}; // 52 actual data
 				i2p::crypto::HKDF (ek.GetPublicKey (), authInput, 100, "ELS2_XCA", okm);
 				memcpy (authData, okm + 44, 8); authData += 8; // clientID_i
 				i2p::crypto::ChaCha20 (authCookie, 32, okm, okm + 32, authData); authData += 32; // clientCookie_i
@@ -1101,16 +1101,16 @@ namespace data
 		}
 		else // assume PSK
 		{
-			uint8_t authSalt[32];
+			uint8_t authSalt[32]{};
 			RAND_bytes (authSalt, 32);
 			memcpy (authData, authSalt, 32); authData += 32; // authSalt
 			htobe16buf (authData, authKeys->size ()); authData += 2; // num clients
-			uint8_t authInput[68]; // authInput = psk_i || subcredential || publishedTimestamp
+			uint8_t authInput[68]{}; // authInput = psk_i || subcredential || publishedTimestamp
 			memcpy (authInput + 32, subcredential, 36);
 			for (auto& it: *authKeys)
 			{
 				memcpy (authInput, it, 32);
-				uint8_t okm[64]; // 52 actual data
+				uint8_t okm[64]{}; // 52 actual data
 				i2p::crypto::HKDF (authSalt, authInput, 68, "ELS2PSKA", okm);
 				memcpy (authData, okm + 44, 8); authData += 8; // clientID_i
 				i2p::crypto::ChaCha20 (authCookie, 32, okm, okm + 32, authData); authData += 32; // clientCookie_i

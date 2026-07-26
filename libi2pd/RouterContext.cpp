@@ -1337,7 +1337,7 @@ namespace i2p
 		{
 			struct
 			{
-				uint8_t k[32];
+				uint8_t k[32]{};
 				uint64_t t;
 			} data;
 			memcpy (data.k, key, 32);
@@ -1371,7 +1371,7 @@ namespace i2p
 		// m_InitialNoiseState is h = SHA256(h || hepk)
 		m_CurrentNoiseState = m_InitialNoiseState;
 		m_CurrentNoiseState.MixHash (encrypted, 32); // h = SHA256(h || sepk)
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		if (!m_TunnelDecryptor->Decrypt (encrypted, sharedSecret))
 		{
 			LogPrint (eLogWarning, "Router: Incorrect ephemeral public key");
@@ -1379,7 +1379,7 @@ namespace i2p
 		}
 		m_CurrentNoiseState.MixKey (sharedSecret);
 		encrypted += 32;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		memset (nonce, 0, 12);
 		if (!i2p::crypto::AEADChaCha20Poly1305 (encrypted, clearTextSize, m_CurrentNoiseState.m_H, 32,
 			m_CurrentNoiseState.m_CK + 32, nonce, data, clearTextSize, false)) // decrypt

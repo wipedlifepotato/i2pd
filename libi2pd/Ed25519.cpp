@@ -119,7 +119,7 @@ namespace crypto
 		auto Bs = MulB (signature + EDDSA25519_SIGNATURE_LENGTH/2, ctx); // B*S;
 		BN_mod (h, h, l, ctx); // public key is multiple of B, but B%l = 0
 		auto PKh = Mul (publicKey, h, ctx); // PK*h
-		uint8_t diff[32];
+		uint8_t diff[32]{};
 		EncodePoint (Normalize (Sum (Bs, -PKh, ctx), ctx), diff); // Bs - PKh encoded
 		bool passed = !memcmp (signature, diff, 32); // R
 		BN_free (h);
@@ -138,7 +138,7 @@ namespace crypto
 		EVP_DigestInit_ex (ctx, EVP_sha512(), NULL);
 		EVP_DigestUpdate (ctx, expandedPrivateKey + EDDSA25519_PRIVATE_KEY_LENGTH, EDDSA25519_PRIVATE_KEY_LENGTH); // right half of expanded key
 		EVP_DigestUpdate (ctx, buf, len); // data
-		uint8_t digest[64];
+		uint8_t digest[64]{};
 		unsigned int dl = 64;
 		EVP_DigestFinal_ex (ctx, digest, &dl);
 		EVP_MD_CTX_destroy (ctx);
@@ -171,7 +171,7 @@ namespace crypto
 	{
 		BN_CTX * bnCtx = BN_CTX_new ();
 		// T = 80 random bytes
-		uint8_t T[80];
+		uint8_t T[80]{};
 		RAND_bytes (T, 80);
 		// calculate r = H*(T || publickey || data)
 		EVP_MD_CTX * ctx = EVP_MD_CTX_create ();
@@ -179,7 +179,7 @@ namespace crypto
 		EVP_DigestUpdate (ctx, T, 80);
 		EVP_DigestUpdate (ctx, publicKeyEncoded, 32);
 		EVP_DigestUpdate (ctx, buf, len); // data
-		uint8_t digest[64];
+		uint8_t digest[64]{};
 		unsigned int dl = 64;
 		EVP_DigestFinal_ex (ctx, digest, &dl);
 		EVP_MD_CTX_destroy (ctx);
@@ -473,7 +473,7 @@ namespace crypto
 		// calculate alpha = seed mod l
 		BIGNUM * alpha = DecodeBN<64> (seed); // seed is in Little Endian
 		BN_mod (alpha, alpha, l, ctx); // % l
-		uint8_t priv[32];
+		uint8_t priv[32]{};
 		EncodeBN (alpha, priv, 32); // back to Little Endian
 		BN_free (alpha);
 		// A' = BLIND_PUBKEY(A, alpha) = A + DERIVE_PUBLIC(alpha)
@@ -510,7 +510,7 @@ namespace crypto
 
 	void Ed25519::CreateRedDSAPrivateKey (uint8_t * priv)
 	{
-		uint8_t seed[32];
+		uint8_t seed[32]{};
 		RAND_bytes (seed, 32);
 		BIGNUM * p = DecodeBN<32> (seed);
 		BN_CTX * ctx = BN_CTX_new ();

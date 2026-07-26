@@ -780,7 +780,7 @@ namespace crypto
 
 	union GOST3411Block // 8 bytes aligned
 	{
-		uint8_t buf[64];
+		uint8_t buf[64]{};
 		uint64_t ll[8];
 
 		GOST3411Block operator^(const GOST3411Block& other) const
@@ -907,16 +907,16 @@ namespace crypto
 
 	void GOSTR3411_2012_256 (const uint8_t * buf, size_t len, uint8_t * digest)
 	{
-		uint8_t iv[64];
+		uint8_t iv[64]{};
 		memset (iv, 1, 64);
-		uint8_t h[64];
+		uint8_t h[64]{};
 		H (iv, buf, len, h);
 		memcpy (digest, h, 32); // first half
 	}
 
 	void GOSTR3411_2012_512 (const uint8_t * buf, size_t len, uint8_t * digest)
 	{
-		uint8_t iv[64];
+		uint8_t iv[64]{};
 		memset (iv, 0, 64);
 		H (iv, buf, len, digest);
 	}
@@ -941,7 +941,7 @@ namespace crypto
 
 	void GOSTR3411_2012_CTX_Init (GOSTR3411_2012_CTX * ctx, bool is512)
 	{
-		uint8_t iv[64];
+		uint8_t iv[64]{};
 		memset (iv, is512 ? 0 : 1, 64);
 		memcpy (ctx->h.buf, iv, 64);
 		memset (ctx->N.buf, 0, 64);

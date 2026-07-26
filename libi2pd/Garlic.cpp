@@ -165,7 +165,7 @@ namespace garlic
 			ElGamalBlock elGamal;
 			memcpy (elGamal.sessionKey, m_SessionKey, 32);
 			RAND_bytes (elGamal.preIV, 32); // Pre-IV
-			uint8_t iv[32]; // IV is first 16 bytes
+			uint8_t iv[32]{}; // IV is first 16 bytes
 			SHA256(elGamal.preIV, 32, iv);
 			m_Destination->Encrypt ((uint8_t *)&elGamal, buf);
 			m_IV = iv;
@@ -176,7 +176,7 @@ namespace garlic
 		{
 			// session tag
 			memcpy (buf, tag, 32);
-			uint8_t iv[32]; // IV is first 16 bytes
+			uint8_t iv[32]{}; // IV is first 16 bytes
 			SHA256(tag, 32, iv);
 			m_IV = iv;
 			buf += 32;
@@ -513,7 +513,7 @@ namespace garlic
 				m_Tags.erase (it); // tag might be used only once
 				if (length >= 32)
 				{
-					uint8_t iv[32]; // IV is first 16 bytes
+					uint8_t iv[32]{}; // IV is first 16 bytes
 					SHA256(buf, 32, iv);
 					decryption->Decrypt (buf + 32, length - 32, iv, buf + 32);
 					HandleAESBlock (buf + 32, length - 32, decryption, msg->from);
@@ -531,7 +531,7 @@ namespace garlic
 					Decrypt (buf, (uint8_t *)&elGamal, i2p::data::CRYPTO_KEY_TYPE_ELGAMAL))
 				{
 					auto decryption = std::make_shared<AESDecryption>(elGamal.sessionKey);
-					uint8_t iv[32]; // IV is first 16 bytes
+					uint8_t iv[32]{}; // IV is first 16 bytes
 					SHA256(elGamal.preIV, 32, iv);
 					decryption->Decrypt(buf + 514, length - 514, iv, buf + 514);
 					HandleAESBlock (buf + 514, length - 514, decryption, msg->from);
@@ -604,7 +604,7 @@ namespace garlic
 		buf++; // flag
 
 		// payload
-		uint8_t digest[32];
+		uint8_t digest[32]{};
 		SHA256 (buf, payloadSize, digest);
 		if (memcmp (payloadHash, digest, 32)) // payload hash doesn't match
 		{
@@ -753,7 +753,7 @@ namespace garlic
 			if (SupportsEncryptionType (destination->GetEncryptionType ()))
 			{
 				ECIESX25519AEADRatchetSessionPtr session;
-				uint8_t staticKey[32];
+				uint8_t staticKey[32]{};
 				destination->Encrypt (nullptr, staticKey); // we are supposed to get static key
 				auto it = m_ECIESx25519Sessions.find (staticKey);
 				if (it != m_ECIESx25519Sessions.end ())

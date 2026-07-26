@@ -404,7 +404,7 @@ namespace crypto
 
 		private:
 
-			uint8_t m_ExpandedPrivateKey[64];
+			uint8_t m_ExpandedPrivateKey[64]{};
 			uint8_t m_PublicKeyEncoded[EDDSA25519_PUBLIC_KEY_LENGTH];
 	};
 

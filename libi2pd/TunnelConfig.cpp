@@ -83,7 +83,7 @@ namespace tunnel
 		memcpy (encrypted, ephemeralKeys->GetPublicKey (), 32);
 		MixHash (encrypted, 32); // h = SHA256(h || sepk)
 		encrypted += 32;
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		ephemeralKeys->Agree (ident->GetEncryptionPublicKey (), sharedSecret); // x25519(sesk, hepk)
 		MixKey (sharedSecret);
 		if (!Encrypt (plainText, encrypted, SHORT_REQUEST_RECORD_CLEAR_TEXT_SIZE))
@@ -138,7 +138,7 @@ namespace tunnel
 	bool ShortECIESTunnelHopConfig::DecryptBuildResponseRecord (uint8_t * records) const
 	{
 		uint8_t * record = records + recordIndex*SHORT_TUNNEL_BUILD_RECORD_SIZE;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		memset (nonce, 0, 12);
 		nonce[4] = recordIndex; // nonce is record index
 		if (!i2p::crypto::AEADChaCha20Poly1305 (record, SHORT_TUNNEL_BUILD_RECORD_SIZE - 16,
@@ -153,7 +153,7 @@ namespace tunnel
 	void ShortECIESTunnelHopConfig::DecryptRecord (uint8_t * records, int index) const
 	{
 		uint8_t * record = records + index*SHORT_TUNNEL_BUILD_RECORD_SIZE;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		memset (nonce, 0, 12);
 		nonce[4] = index; // nonce is index
 		i2p::crypto::ChaCha20 (record, SHORT_TUNNEL_BUILD_RECORD_SIZE, replyKey, nonce, record);

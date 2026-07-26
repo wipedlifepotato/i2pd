@@ -531,7 +531,7 @@ namespace stream
 			if (packet->from && m_RemoteLeaseSet)
 			{
 				// stream came from ratchets session and static key must match one from LeaseSet
-				uint8_t staticKey[32];
+				uint8_t staticKey[32]{};
 				m_RemoteLeaseSet->Encrypt (nullptr, staticKey);
 				if (memcmp (packet->from->GetRemoteStaticKey (), staticKey, 32))
 				{
@@ -561,7 +561,7 @@ namespace stream
 					m_RemoteLeaseSet = m_LocalDestination.GetOwner ()->FindLeaseSet (m_RemoteIdentity->GetIdentHash ());
 				if (m_RemoteLeaseSet)
 				{
-					uint8_t staticKey[32];
+					uint8_t staticKey[32]{};
 					m_RemoteLeaseSet->Encrypt (nullptr, staticKey);
 					if (memcmp (packet->from->GetRemoteStaticKey (), staticKey, 32))
 					{
@@ -637,7 +637,7 @@ namespace stream
 				if (signatureLen <= 256)
 				{
 					// standard
-					uint8_t signature[256];
+					uint8_t signature[256]{};
 					memcpy (signature, optionData, signatureLen);
 					memset (const_cast<uint8_t *>(optionData), 0, signatureLen);
 					verified = m_TransientVerifier ?

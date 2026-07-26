@@ -40,7 +40,7 @@ namespace data
 			{
 				std::shared_ptr<i2p::crypto::Verifier> verifier;
 				// extract issuer name
-				char name[100];
+				char name[100]{};
 				X509_NAME_oneline (X509_get_issuer_name(cert), name, 100);
 				char * cn = strstr (name, "CN=");
 				if (cn)
@@ -53,7 +53,7 @@ namespace data
 					{	
 						int curve = 0;
 #if (OPENSSL_VERSION_NUMBER >= 0x030000000) // since 3.0.0
-						char groupName[20];
+						char groupName[20]{};
 						if (EVP_PKEY_get_group_name(pkey, groupName, sizeof(groupName), NULL) == 1)
 							curve = OBJ_txt2nid (groupName);
 						else
@@ -123,7 +123,7 @@ namespace data
 			{
 				ECDSA_SIG * sig = ECDSA_SIG_new();
 				ECDSA_SIG_set0 (sig, BN_bin2bn (signatureBuf, 32, NULL), BN_bin2bn (signatureBuf + 32, 32, NULL));
-				uint8_t sign[72];
+				uint8_t sign[72]{};
 				uint8_t * s = sign;
 				auto l = i2d_ECDSA_SIG (sig, &s);
 				ECDSA_SIG_free(sig);
@@ -158,7 +158,7 @@ namespace data
 			EVP_PKEY * pkey = SSL_get_privatekey (ssl);
 			int curve = 0;
 #if (OPENSSL_VERSION_NUMBER >= 0x030000000) // since 3.0.0
-			char groupName[20];
+			char groupName[20]{};
 			if (EVP_PKEY_get_group_name(pkey, groupName, sizeof(groupName), NULL) == 1)
 				curve = OBJ_txt2nid (groupName);
 			else

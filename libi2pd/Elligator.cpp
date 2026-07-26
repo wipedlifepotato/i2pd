@@ -54,7 +54,7 @@ namespace crypto
 		BN_CTX * ctx = BN_CTX_new ();
 		BN_CTX_start (ctx);
 
-		uint8_t key1[32];
+		uint8_t key1[32]{};
 		for (size_t i = 0; i < 16; i++) // from Little Endian
 		{
 			key1[i] = key[31 - i];
@@ -117,7 +117,7 @@ namespace crypto
 		BN_CTX * ctx = BN_CTX_new ();
 		BN_CTX_start (ctx);
 
-		uint8_t encoded1[32];
+		uint8_t encoded1[32]{};
 		for (size_t i = 0; i < 16; i++) // from Little Endian
 		{
 			encoded1[i] = encoded[31 - i];

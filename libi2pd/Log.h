@@ -58,7 +58,7 @@ namespace log {
 			std::shared_ptr<std::ostream> m_LogStream;
 			std::string m_Logfile;
 			std::time_t m_LastTimestamp;
-			char m_LastDateTime[64];
+			char m_LastDateTime[64]{};
 			i2p::util::Queue<std::shared_ptr<LogMsg> > m_Queue;
 			bool m_HasColors;
 			std::string m_TimeFormat;

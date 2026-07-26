@@ -38,10 +38,10 @@ namespace data
 
 	struct Keys
 	{
-		uint8_t privateKey[256];
-		uint8_t signingPrivateKey[20];
-		uint8_t publicKey[256];
-		uint8_t signingKey[128];
+		uint8_t privateKey[256]{};
+		uint8_t signingPrivateKey[20]{};
+		uint8_t publicKey[256]{};
+		uint8_t signingKey[128]{};
 	};
 
 	const uint8_t CERTIFICATE_TYPE_NULL = 0;
@@ -53,9 +53,9 @@ namespace data
 
 	struct Identity
 	{
-		uint8_t publicKey[256];
-		uint8_t signingKey[128];
-		uint8_t certificate[3];	// byte 1 - type, bytes 2-3 - length
+		uint8_t publicKey[256]{};
+		uint8_t signingKey[128]{};
+		uint8_t certificate[3]{};	// byte 1 - type, bytes 2-3 - length
 
 		Identity () = default;
 		Identity (const Keys& keys) { *this = keys; };
@@ -202,7 +202,7 @@ namespace data
 		private:
 
 			std::shared_ptr<IdentityEx> m_Public;
-			uint8_t m_PrivateKey[256];
+			uint8_t m_PrivateKey[256]{};
 			std::vector<uint8_t> m_SigningPrivateKey;
 			mutable std::unique_ptr<i2p::crypto::Signer> m_Signer;
 			std::vector<uint8_t> m_OfflineSignature; // non zero length, if applicable

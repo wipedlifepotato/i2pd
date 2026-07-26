@@ -76,16 +76,16 @@ namespace garlic
 
 			struct NTCP2PrivateKeys
 			{
-				uint8_t staticPublicKey[32];
-				uint8_t staticPrivateKey[32];
-				uint8_t iv[16];
+				uint8_t staticPublicKey[32]{};
+				uint8_t staticPrivateKey[32]{};
+				uint8_t iv[16]{};
 			};
 
 			struct SSU2PrivateKeys
 			{
-				uint8_t staticPublicKey[32];
-				uint8_t staticPrivateKey[32];
-				uint8_t intro[32];
+				uint8_t staticPublicKey[32]{};
+				uint8_t staticPrivateKey[32]{};
+				uint8_t intro[32]{};
 			};
 
 			class RouterService: public i2p::util::RunnableServiceWithWork

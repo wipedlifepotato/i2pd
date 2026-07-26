@@ -80,7 +80,7 @@ namespace transport
 		// h = SHA256(h || epub)
 		MixHash (epub, 32);
 		// x25519 between pub and priv
-		uint8_t inputKeyMaterial[32];
+		uint8_t inputKeyMaterial[32]{};
 		if (!priv.Agree (pub, inputKeyMaterial)) return false;
 		MixKey (inputKeyMaterial);
 		return true;
@@ -101,7 +101,7 @@ namespace transport
 		MixHash (epub, 32);
 
 		// x25519 between remote pub and ephemaral priv
-		uint8_t inputKeyMaterial[32];
+		uint8_t inputKeyMaterial[32]{};
 		if (!m_EphemeralKeys->Agree (GetRemotePub (), inputKeyMaterial)) return false;
 		MixKey (inputKeyMaterial);
 		return true;
@@ -119,7 +119,7 @@ namespace transport
 
 	bool NTCP2Establisher::KDF3Alice ()
 	{
-		uint8_t inputKeyMaterial[32];
+		uint8_t inputKeyMaterial[32]{};
 		if (!i2p::context.GetNTCP2StaticKeys ().Agree (GetRemotePub (), inputKeyMaterial)) return false;
 		MixKey (inputKeyMaterial);
 		return true;
@@ -127,7 +127,7 @@ namespace transport
 
 	bool NTCP2Establisher::KDF3Bob ()
 	{
-		uint8_t inputKeyMaterial[32];
+		uint8_t inputKeyMaterial[32]{};
 		if (!m_EphemeralKeys->Agree (m_RemoteStaticKey, inputKeyMaterial)) return false;
 		MixKey (inputKeyMaterial);
 		return true;
@@ -152,7 +152,7 @@ namespace transport
 #if OPENSSL_PQ
         if (m_CryptoType > i2p::data::CRYPTO_KEY_TYPE_ECIES_X25519_AEAD)
         {
-            uint8_t pub[32];
+            uint8_t pub[32]{};
             memcpy (pub, GetPub (), 32);
             pub[31] |= 0x80; // set highest bit
             encryption.Encrypt (pub, 32, m_IV, m_Buffer); // X
@@ -197,7 +197,7 @@ namespace transport
         if (offset + 32 + maxPaddingLength > maxMsgSize) maxPaddingLength = maxMsgSize - offset - 32;
 		auto paddingLength = maxPaddingLength ? rng () % maxPaddingLength : 0;
 		// fill options
-		uint8_t options[32]; // actual options size is 16 bytes
+		uint8_t options[32]{}; // actual options size is 16 bytes
 		memset (options, 0, 16);
 		options[0] = i2p::context.GetNetID (); // network ID
 		options[1] = 2; // ver, always 2 regardless actual version
@@ -254,7 +254,7 @@ namespace transport
         {
             size_t cipherTextLen = i2p::crypto::GetMLKEMCipherTextLen (m_CryptoType);
 			std::vector<uint8_t> kemCiphertext(cipherTextLen);
-			uint8_t sharedSecret[32];
+			uint8_t sharedSecret[32]{};
 			m_PQKeys->Encaps (kemCiphertext.data (), sharedSecret);
 			if (!Encrypt (kemCiphertext.data (), m_Buffer + offset, cipherTextLen))
 			{
@@ -273,7 +273,7 @@ namespace transport
 		// calculate padding length
 		if (offset + 32 + maxPaddingLength > maxMsgSize) maxPaddingLength = maxMsgSize - offset - 32;
 		auto paddingLength = maxPaddingLength ? rng () % maxPaddingLength : 0;
-		uint8_t options[16];
+		uint8_t options[16]{};
 		memset (options, 0, 16);
 		htobe16buf (options + 2, paddingLength); // padLen
 		htobe32buf (options + 8, (i2p::util::GetMillisecondsSinceEpoch () + 500)/1000); // tsB, rounded to seconds
@@ -378,7 +378,7 @@ namespace transport
         }
 #endif
 		// verify MAC and decrypt options block (32 bytes)
-		uint8_t options[16];
+		uint8_t options[16]{};
 		if (Decrypt (m_Buffer + offset, options, 16))
 		{
             MixHash (m_Buffer + offset, 32);
@@ -454,13 +454,13 @@ namespace transport
 			MixHash (m_Buffer + offset, cipherTextLen + 16);
 			offset += cipherTextLen + 16;
 			// decaps
-			uint8_t sharedSecret[32];
+			uint8_t sharedSecret[32]{};
 			m_PQKeys->Decaps (kemCiphertext.data (), sharedSecret);
 			MixKey (sharedSecret);
 		}
 #endif
 		// decrypt options and verify MAC
-		uint8_t options[16];
+		uint8_t options[16]{};
 		if (Decrypt (m_Buffer + offset, options, 16))
 		{
             MixHash (m_Buffer + offset, 32); // encrypted options
@@ -657,12 +657,12 @@ namespace transport
 
 	void NTCP2Session::KeyDerivationFunctionDataPhase ()
 	{
-		uint8_t k[64];
+		uint8_t k[64]{};
 		i2p::crypto::HKDF (m_Establisher->GetCK (), nullptr, 0, "", k); // k_ab, k_ba = HKDF(ck, zerolen)
 		memcpy (m_Kab, k, 32); memcpy (m_Kba, k + 32, 32);
-		uint8_t master[32];
+		uint8_t master[32]{};
 		i2p::crypto::HKDF (m_Establisher->GetCK (), nullptr, 0, "ask", master, 32); // ask_master = HKDF(ck, zerolen, info="ask")
-		uint8_t h[39];
+		uint8_t h[39]{};
 		memcpy (h, m_Establisher->GetH (), 32);
 		memcpy (h + 32, "siphash", 7);
 		i2p::crypto::HKDF (master, h, 39, "", master, 32); // sip_master = HKDF(ask_master, h || "siphash")
@@ -1251,7 +1251,7 @@ namespace transport
 		{
 			UpdateNumReceivedBytes (bytes_transferred + 2);
 			i2p::transport::transports.UpdateReceivedBytes (bytes_transferred + 2);
-			uint8_t nonce[12];
+			uint8_t nonce[12]{};
 			CreateNonce (m_ReceiveSequenceNumber, nonce); m_ReceiveSequenceNumber++;
 			if (m_Server.AEADChaCha20Poly1305Decrypt (m_NextReceivedBuffer, m_NextReceivedLen-16, nullptr, 0, m_ReceiveKey, nonce, m_NextReceivedBuffer, m_NextReceivedLen))
 			{
@@ -1441,7 +1441,7 @@ namespace transport
 			LogPrint (eLogError, "NTCP2: Frame to send is too long ", totalLen);
 			return;
 		}
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (m_SendSequenceNumber, nonce); m_SendSequenceNumber++;
 		m_Server.AEADChaCha20Poly1305Encrypt (encryptBufs, m_SendKey, nonce, macBuf); // encrypt buffers
 		SetNextSentFrameLength (totalLen + 16, first->GetNTCP2Header () - 5); // frame length right before first block
@@ -1472,7 +1472,7 @@ namespace transport
 			return;
 		}
 		// encrypt
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (m_SendSequenceNumber, nonce); m_SendSequenceNumber++;
 		m_Server.AEADChaCha20Poly1305Encrypt ({ {m_NextSendBuffer + 2, payloadLen} }, m_SendKey, nonce, m_NextSendBuffer + payloadLen + 2);
 		SetNextSentFrameLength (payloadLen + 16, m_NextSendBuffer);

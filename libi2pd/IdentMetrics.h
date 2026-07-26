@@ -25,7 +25,7 @@ namespace data
 	{
 		union
 		{
-			uint8_t metric[32];
+			uint8_t metric[32]{};
 			uint64_t metric_ll[4];
 		};
 

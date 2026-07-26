@@ -43,9 +43,9 @@ namespace garlic
 
 	struct ElGamalBlock
 	{
-		uint8_t sessionKey[32];
-		uint8_t preIV[32];
-		uint8_t padding[158];
+		uint8_t sessionKey[32]{};
+		uint8_t preIV[32]{};
+		uint8_t padding[158]{};
 	};
 
 	const int INCOMING_TAGS_EXPIRATION_TIMEOUT = 960; // 16 minutes

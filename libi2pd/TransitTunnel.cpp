@@ -419,7 +419,7 @@ namespace tunnel
 				}
 
 				// encrypt reply
-				uint8_t nonce[12];
+				uint8_t nonce[12]{};
 				memset (nonce, 0, 12);
 				uint8_t * reply = buf + 1;
 				for (int j = 0; j < num; j++)
@@ -576,7 +576,7 @@ namespace tunnel
 					uint8_t * reply = records + j*TUNNEL_BUILD_RECORD_SIZE;
 					if (j == i)
 					{
-						uint8_t nonce[12];
+						uint8_t nonce[12]{};
 						memset (nonce, 0, 12);
 						auto& noiseState = i2p::context.GetCurrentNoiseState ();
 						if (!i2p::crypto::AEADChaCha20Poly1305 (reply, TUNNEL_BUILD_RECORD_SIZE - 16,

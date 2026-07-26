@@ -112,13 +112,13 @@ namespace client
 			m_Pool->SetTrustedRouters (i2p::data::ExtractIdentHashes (trustedRoutersStr));
 		if (!inboundRandomKeyStr.empty ())
 		{
-			uint8_t key[32]; // might be 32 bytes, but only first 16 bytes are used
+			uint8_t key[32]{}; // might be 32 bytes, but only first 16 bytes are used
 			if (i2p::data::Base64ToByteStream (inboundRandomKeyStr, key, 32) >= 16)
 				m_Pool->SetInboundPeerOrderingKey (key);
 		}
 		if (!outboundRandomKeyStr.empty ())
 		{
-			uint8_t key[32]; // might be 32 bytes, but only first 16 bytes are used
+			uint8_t key[32]{}; // might be 32 bytes, but only first 16 bytes are used
 			if (i2p::data::Base64ToByteStream (outboundRandomKeyStr, key, 32) >= 16)
 				m_Pool->SetOutboundPeerOrderingKey (key);
 		}
@@ -312,7 +312,7 @@ namespace client
 	{
 		struct
 		{
-			uint8_t k[32];
+			uint8_t k[32]{};
 			uint64_t t;
 		} data;
 		memcpy (data.k, key, 32);
@@ -457,7 +457,7 @@ namespace client
 						    from ? from->GetRemoteStaticKeyType () : GetPreferredCryptoType () ); // LeaseSet2
 						if (from)
 						{
-							uint8_t pub[32];
+							uint8_t pub[32]{};
 							leaseSet->Encrypt (nullptr, pub);
 							if (!memcmp (from->GetRemoteStaticKey (), pub, 32))
 								from->SetDestination (leaseSet->GetIdentHash ());
@@ -886,7 +886,7 @@ namespace client
 			request->excluded.insert (nextFloodfill->GetIdentHash ());
 			request->requestTimeoutTimer.cancel ();
 
-			uint8_t replyKey[32];
+			uint8_t replyKey[32]{};
 			uint64_t replyTag;
 			RAND_bytes (replyKey, 32); // random session key
 			RAND_bytes ((uint8_t *)&replyTag, 8); // random session tag

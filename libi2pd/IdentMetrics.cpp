@@ -19,7 +19,7 @@ namespace data
 {
 	IdentHash CreateRoutingKey (const IdentHash& ident, bool nextDay)
 	{
-		uint8_t buf[41]; // ident + yyyymmdd
+		uint8_t buf[41]{}; // ident + yyyymmdd
 		memcpy (buf, (const uint8_t *)ident, 32);
 		if (nextDay)
 			i2p::util::GetNextDayDate ((char *)(buf + 32));
@@ -72,7 +72,7 @@ namespace data
 
 	int PeerOrdering::CalculatePeerOrderingGroup (const IdentHash& routerIdent)
 	{
-		uint8_t hash[16];
+		uint8_t hash[16]{};
 #if OPENSSL_SIPHASH
 		EVP_DigestSignInit (m_MDCtx, nullptr, nullptr, nullptr, nullptr);
 		EVP_DigestSignUpdate (m_MDCtx, routerIdent, 32);

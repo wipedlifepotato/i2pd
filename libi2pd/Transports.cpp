@@ -1225,7 +1225,7 @@ namespace transport
 		auto ts = i2p::util::GetSecondsSinceEpoch ();
 		bool found = false;
 		i2p::data::IdentHash foundIdent;
-		uint16_t inds[3];
+		uint16_t inds[3]{};
 		RAND_bytes ((uint8_t *)inds, sizeof (inds));
 		auto count = peers.size ();
 		if (!count) return nullptr;

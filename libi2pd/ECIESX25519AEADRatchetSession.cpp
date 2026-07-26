@@ -28,7 +28,7 @@ namespace garlic
 	void RatchetTagSet::DHInitialize (const uint8_t * rootKey, const uint8_t * k)
 	{
 		// DH_INITIALIZE(rootKey, k)
-		uint8_t keydata[64];
+		uint8_t keydata[64]{};
 		i2p::crypto::HKDF (rootKey, k, 32, "KDFDHRatchetStep", keydata); // keydata = HKDF(rootKey, k, "KDFDHRatchetStep", 64)
 		memcpy (m_NextRootKey, keydata, 32); // nextRootKey = keydata[0:31]
 		i2p::crypto::HKDF (keydata + 32, nullptr, 0, "TagAndKeyGenKeys", m_SessionTagKeyData);
@@ -144,7 +144,7 @@ namespace garlic
 	bool SymmetricKeyTagSet::HandleNextMessage (uint8_t * buf, size_t len, int index)
 	{
 		if (len < 24) return false;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		memset (nonce, 0, 12); // n = 0
 		size_t offset = 8; // first 8 bytes is reply tag used as AD
 		len -= 16; // poly1305
@@ -232,7 +232,7 @@ namespace garlic
 
 	void ECIESX25519AEADRatchetSession::InitNewSessionTagset (std::shared_ptr<RatchetTagSet> tagsetNsr) const
 	{
-		uint8_t tagsetKey[32];
+		uint8_t tagsetKey[32]{};
 		i2p::crypto::HKDF (m_CK, nullptr, 0, "SessionReplyTags", tagsetKey, 32); // tagsetKey = HKDF(chainKey, ZEROLEN, "SessionReplyTags", 32)
 		// Session Tag Ratchet
 		tagsetNsr->DHInitialize (m_CK, tagsetKey); // tagset_nsr = DH_INITIALIZE(chainKey, tagsetKey)
@@ -283,7 +283,7 @@ namespace garlic
 		}
 		buf += 32; len -= 32;
 
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		bool decrypted = false;
 		auto cryptoType = GetOwner ()->GetRatchetsHighestCryptoType ();
 #if OPENSSL_PQ
@@ -344,7 +344,7 @@ namespace garlic
 			LogPrint (eLogWarning, "Garlic: Static key section is too short ", len);
 			return false;
 		}
-		uint8_t fs[32];
+		uint8_t fs[32]{};
 		if (!Decrypt (buf, fs, 32))
 		{
 			LogPrint (eLogWarning, "Garlic: Flags/static section AEAD verification failed ");
@@ -575,7 +575,7 @@ namespace garlic
 #endif
 			i2p::crypto::InitNoiseIKState (GetNoiseState (), m_RemoteStaticKey); // bpk
 		MixHash (m_EphemeralKeys->GetPublicKey (), 32); // h = SHA256(h || aepk)
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		if (!m_EphemeralKeys->Agree (m_RemoteStaticKey, sharedSecret)) // x25519(aesk, bpk)
 		{
 			LogPrint (eLogWarning, "Garlic: Incorrect Bob static key");
@@ -664,7 +664,7 @@ namespace garlic
 		// KDF for Reply Key Section
 		MixHash ((const uint8_t *)&tag, 8); // h = SHA256(h || tag)
 		MixHash (m_EphemeralKeys->GetPublicKey (), 32); // h = SHA256(h || bepk)
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		if (!m_EphemeralKeys->Agree (m_Aepk, sharedSecret)) // sharedSecret = x25519(besk, aepk)
 		{
 			LogPrint (eLogWarning, "Garlic: Incorrect Alice ephemeral key");
@@ -705,7 +705,7 @@ namespace garlic
 		MixHash (out + offset, 16); // h = SHA256(h || ciphertext)
 		offset += 16;
 		// KDF for payload
-		uint8_t keydata[64];
+		uint8_t keydata[64]{};
 		i2p::crypto::HKDF (m_CK, nullptr, 0, "", keydata); // keydata = HKDF(chainKey, ZEROLEN, "", 64)
 		// k_ab = keydata[0:31], k_ba = keydata[32:63]
 		auto receiveTagset = std::make_shared<ReceiveRatchetTagSet>(shared_from_this());
@@ -718,7 +718,7 @@ namespace garlic
 			GetOwner ()->GetNumRatchetInboundTags () : ECIESX25519_MIN_NUM_GENERATED_TAGS);
 		i2p::crypto::HKDF (keydata + 32, nullptr, 0, "AttachPayloadKDF", m_NSRKey, 32); // k = HKDF(k_ba, ZEROLEN, "AttachPayloadKDF", 32)
 		// encrypt payload
-		uint8_t nonce[12]; memset (nonce, 0, 12); // seqn = 0
+		uint8_t nonce[12]{}; memset (nonce, 0, 12); // seqn = 0
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len, m_H, 32, m_NSRKey, nonce, out + offset, len + 16, true)) // encrypt
 		{
 			LogPrint (eLogWarning, "Garlic: NSR payload section AEAD encryption failed");
@@ -749,7 +749,7 @@ namespace garlic
 			{
 				size_t cipherTextLen = i2p::crypto::GetMLKEMCipherTextLen (m_RemoteStaticKeyType);
 				std::vector<uint8_t> kemCiphertext(cipherTextLen);
-				uint8_t sharedSecret[32];
+				uint8_t sharedSecret[32]{};
 				m_PQKeys->Encaps (kemCiphertext.data (), sharedSecret);
 
 				memcpy (m_CK, m_NSRCK->data (), 64); // restore key
@@ -776,7 +776,7 @@ namespace garlic
 		}
 		MixHash (out + offset, 16); // h = SHA256(h || ciphertext)
 		// encrypt payload
-		uint8_t nonce[12]; memset (nonce, 0, 12);
+		uint8_t nonce[12]{}; memset (nonce, 0, 12);
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len, m_H, 32, m_NSRKey, nonce, out + offset + 16, len + 16, true)) // encrypt
 		{
 			LogPrint (eLogWarning, "Garlic: Next NSR payload section AEAD encryption failed");
@@ -791,7 +791,7 @@ namespace garlic
 		LogPrint (eLogDebug, "Garlic: Reply received");
 		const uint8_t * tag = buf;
 		buf += 8; len -= 8; // tag
-		uint8_t bepk[32]; // Bob's ephemeral key
+		uint8_t bepk[32]{}; // Bob's ephemeral key
 		if (len < 32 || !i2p::crypto::GetElligator ()->Decode (buf, bepk))
 		{
 			LogPrint (eLogError, "Garlic: Can't decode elligator");
@@ -802,7 +802,7 @@ namespace garlic
 		i2p::util::SaveStateHelper<i2p::crypto::NoiseSymmetricState> s(GetNoiseState ()); // restore noise state on exit
 		MixHash (tag, 8); // h = SHA256(h || tag)
 		MixHash (bepk, 32); // h = SHA256(h || bepk)
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		if (!m_EphemeralKeys->Agree (bepk, sharedSecret)) // sharedSecret = x25519(aesk, bepk)
 		{
 			LogPrint (eLogWarning, "Garlic: Incorrect Bob ephemeral key");
@@ -850,7 +850,7 @@ namespace garlic
 		MixHash (buf, 16); // h = SHA256(h || ciphertext)
 		buf += 16; len -= 16;
 		// KDF for payload
-		uint8_t keydata[64];
+		uint8_t keydata[64]{};
 		i2p::crypto::HKDF (m_CK, nullptr, 0, "", keydata); // keydata = HKDF(chainKey, ZEROLEN, "", 64)
 		if (m_State == eSessionStateNewSessionSent)
 		{
@@ -872,7 +872,7 @@ namespace garlic
 			LogPrint (eLogWarning, "Garlic: Payload section is too short ", len);
 			return false;
 		}
-		uint8_t nonce[12]; memset (nonce, 0, 12); // seqn = 0
+		uint8_t nonce[12]{}; memset (nonce, 0, 12); // seqn = 0
 		if (!i2p::crypto::AEADChaCha20Poly1305 (buf, len - 16, m_H, 32, keydata, nonce, buf, len - 16, false)) // decrypt
 		{
 			LogPrint (eLogWarning, "Garlic: Payload section AEAD decryption failed");
@@ -900,7 +900,7 @@ namespace garlic
 	{
 		auto owner = GetOwner ();
 		if (!owner) return false;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		auto index = m_SendTagset->GetNextIndex ();
 		CreateNonce (index, nonce); // tag's index
 		uint64_t tag = m_SendTagset->GetNextSessionTag ();
@@ -913,7 +913,7 @@ namespace garlic
 		memcpy (out, &tag, 8);
 		// ad = The session tag, 8 bytes
 		// ciphertext = ENCRYPT(k, n, payload, ad)
-		uint8_t key[32];
+		uint8_t key[32]{};
 		m_SendTagset->GetSymmKey (index, key);
 		if (!owner->AEADChaCha20Poly1305Encrypt (payload, len, out, 8, key, nonce, out + 8, outLen - 8))
 		{
@@ -928,11 +928,11 @@ namespace garlic
 	bool ECIESX25519AEADRatchetSession::HandleExistingSessionMessage (uint8_t * buf, size_t len,
 		std::shared_ptr<ReceiveRatchetTagSet> receiveTagset, int index)
 	{
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (index, nonce); // tag's index
 		len -= 8; // tag
 		uint8_t * payload = buf + 8;
-		uint8_t key[32];
+		uint8_t key[32]{};
 		receiveTagset->GetSymmKey (index, key);
 		auto owner = GetOwner ();
 		if (!owner) return true; // drop message
@@ -1384,7 +1384,7 @@ namespace garlic
 		m_CurrentNoiseState = GetNoiseState ();
 		// we are Bob
 		m_CurrentNoiseState.MixHash (buf, 32);
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		if (!GetOwner ()->Decrypt (buf, sharedSecret, i2p::data::CRYPTO_KEY_TYPE_ECIES_X25519_AEAD)) // x25519(bsk, aepk)
 		{
 			LogPrint (eLogWarning, "Garlic: Incorrect N ephemeral public key");
@@ -1392,7 +1392,7 @@ namespace garlic
 		}
 		m_CurrentNoiseState.MixKey (sharedSecret);
 		buf += 32; len -= 32;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (0, nonce);
 		std::vector<uint8_t> payload (len - 16);
 		if (!i2p::crypto::AEADChaCha20Poly1305 (buf, len - 16, m_CurrentNoiseState.m_H, 32,
@@ -1457,7 +1457,7 @@ namespace garlic
 		memcpy (buf + offset, &tag, 8); offset += 8;
 		auto payload = buf + offset;
 		size_t len = CreateGarlicPayload (msg, payload, false, 956); // 1003 - 8 tag - 16 Poly1305 hash - 16 I2NP header - 4 garlic length - 3 local tunnel delivery
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		memset (nonce, 0, 12); // n = 0
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len, buf, 8, key, nonce, payload, len + 16, true)) // encrypt
 		{
@@ -1490,7 +1490,7 @@ namespace garlic
 		memcpy (buf + offset, ephemeralKeys->GetPublicKey (), 32);
 		noiseState.MixHash (buf + offset, 32); // h = SHA256(h || aepk)
 		offset += 32;
-		uint8_t sharedSecret[32];
+		uint8_t sharedSecret[32]{};
 		if (!ephemeralKeys->Agree (routerPublicKey, sharedSecret)) // x25519(aesk, bpk)
 		{
 			LogPrint (eLogWarning, "Garlic: Incorrect Bob static key");
@@ -1499,7 +1499,7 @@ namespace garlic
 		noiseState.MixKey (sharedSecret);
 		auto payload = buf + offset;
 		size_t len = CreateGarlicPayload (msg, payload, true, 900); // 1003 - 32 eph key - 16 Poly1305 hash - 16 I2NP header - 4 garlic length - 35 router tunnel delivery
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		memset (nonce, 0, 12);
 		// encrypt payload
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len, noiseState.m_H, 32, noiseState.m_CK + 32, nonce, payload, len + 16, true)) // encrypt

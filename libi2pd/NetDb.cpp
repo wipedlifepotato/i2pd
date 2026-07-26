@@ -1227,7 +1227,7 @@ namespace data
 	{
 		if (m_RouterInfos.empty())
 			return nullptr;
-		uint16_t inds[3];
+		uint16_t inds[3]{};
 		RAND_bytes ((uint8_t *)inds, sizeof (inds));
 		std::lock_guard<std::mutex> l(m_RouterInfosMutex);
 		auto count = m_RouterInfos.size ();

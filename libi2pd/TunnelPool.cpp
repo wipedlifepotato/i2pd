@@ -452,7 +452,7 @@ namespace tunnel
 					}
 				};
 			// encrypt
-			uint8_t key[32]; RAND_bytes (key, 32);
+			uint8_t key[32]{}; RAND_bytes (key, 32);
 			uint64_t tag; RAND_bytes ((uint8_t *)&tag, 8);
 			m_LocalDestination->SubmitECIESx25519Key (key, tag);
 			msg = i2p::garlic::WrapECIESX25519Message (msg, key, tag);

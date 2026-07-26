@@ -69,7 +69,7 @@ namespace datagram
 					uint8_t flags[] = { 0x00, 0x03 }; // datagram3, no options
 					if (options)
 					{
-						uint8_t optionsBuf[256]; // TODO: evaluate actual size
+						uint8_t optionsBuf[256]{}; // TODO: evaluate actual size
 						size_t optionsLen = options->ToBuffer (optionsBuf, 256);
 						if (optionsLen) flags[1] |= DATAGRAM3_FLAG_OPTIONS;
 						msg = CreateDataMessage ({{m_Owner->GetIdentity ()->GetIdentHash (), 32}, {flags, 2},
@@ -84,7 +84,7 @@ namespace datagram
 				{
 					if (m_Owner->GetIdentity ()->GetSigningKeyType () == i2p::data::SIGNING_KEY_TYPE_DSA_SHA1)
 					{
-						uint8_t hash[32];
+						uint8_t hash[32]{};
 						SHA256(payload, len, hash);
 						m_Owner->Sign (hash, 32, m_Signature.data ());
 					}
@@ -144,7 +144,7 @@ namespace datagram
 			ls = m_Owner->FindLeaseSet (identity.GetIdentHash ());
 			if (ls)
 			{
-				uint8_t staticKey[32];
+				uint8_t staticKey[32]{};
 				ls->Encrypt (nullptr, staticKey);
 				if (!memcmp (from->GetRemoteStaticKey (), staticKey, 32))
 					verified = true;
@@ -160,7 +160,7 @@ namespace datagram
 		{
 			if (identity.GetSigningKeyType () == i2p::data::SIGNING_KEY_TYPE_DSA_SHA1)
 			{
-				uint8_t hash[32];
+				uint8_t hash[32]{};
 				SHA256(buf + headerLen, len - headerLen, hash);
 				verified = identity.Verify (hash, 32, signature);
 			}
@@ -214,7 +214,7 @@ namespace datagram
 			ls = m_Owner->FindLeaseSet (identity.GetIdentHash ());
 			if (ls)
 			{
-				uint8_t staticKey[32];
+				uint8_t staticKey[32]{};
 				ls->Encrypt (nullptr, staticKey);
 				if (!memcmp (from->GetRemoteStaticKey (), staticKey, 32))
 					verified = true;
@@ -300,7 +300,7 @@ namespace datagram
 			if (!ls) ls = m_Owner->FindLeaseSet (ident);
 			if (ls)
 			{
-				uint8_t staticKey[32];
+				uint8_t staticKey[32]{};
 				ls->Encrypt (nullptr, staticKey);
 				if (!memcmp (from->GetRemoteStaticKey (), staticKey, 32))
 				{

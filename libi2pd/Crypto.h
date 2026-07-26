@@ -71,7 +71,7 @@ namespace crypto
 
 		private:
 
-			uint8_t m_PublicKey[32];
+			uint8_t m_PublicKey[32]{};
 			EVP_PKEY_CTX * m_Ctx;
 			EVP_PKEY * m_Pkey;
 			bool m_IsElligatorIneligible = false; // true if definitely ineligible

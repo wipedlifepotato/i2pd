@@ -66,7 +66,7 @@ namespace data
 
 	IdentityEx::IdentityEx(const uint8_t * publicKey, const uint8_t * signingKey, SigningKeyType type, CryptoKeyType cryptoType)
 	{
-		uint8_t randomPaddingBlock[32];
+		uint8_t randomPaddingBlock[32]{};
 		RAND_bytes (randomPaddingBlock, 32);
 		if (cryptoType == CRYPTO_KEY_TYPE_ECIES_X25519_AEAD)
 		{
@@ -771,7 +771,7 @@ namespace data
 			keys.m_SigningPrivateKey.resize (verifier->GetPrivateKeyLen ());
 			GenerateSigningKeyPair (type, keys.m_SigningPrivateKey.data (), signingPublicKey.data ());
 			// encryption
-			uint8_t publicKey[256];
+			uint8_t publicKey[256]{};
 			if (isDestination)
 				RAND_bytes (keys.m_PrivateKey, 256);
 			else

@@ -1577,7 +1577,7 @@ namespace transport
 			payloadSize += CreateTerminationBlock (payload + payloadSize, 56 - payloadSize);
 		payloadSize += CreatePaddingBlock (payload + payloadSize, 56 - payloadSize);
 		// encrypt
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (be32toh (header.h.packetNum), nonce);
 		i2p::crypto::AEADChaCha20Poly1305 (payload, payloadSize, h, 32, i2p::context.GetSSU2IntroKey (), nonce, payload, payloadSize + 16, true);
 		payloadSize += 16;
@@ -1615,7 +1615,7 @@ namespace transport
 		// decrypt and handle payload
 		uint8_t * payload = buf + 32;
 		CreateNonce (be32toh (header.h.packetNum), nonce);
-		uint8_t h[32];
+		uint8_t h[32]{};
 		memcpy (h, header.buf, 16);
 		memcpy (h + 16, &headerX, 16);
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len - 48, h, 32,
@@ -1672,7 +1672,7 @@ namespace transport
 		// decrypt and handle payload
 		uint8_t * payload = buf + 32;
 		CreateNonce (be32toh (header.h.packetNum), nonce);
-		uint8_t h[32];
+		uint8_t h[32]{};
 		memcpy (h, header.buf, 16);
 		memcpy (h + 16, &headerX, 16);
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len - 48, h, 32,
@@ -1708,7 +1708,7 @@ namespace transport
 		header.h.type = eSSU2Data;
 		memset (header.h.flags, 0, 3);
 		if (flags) header.h.flags[0] = flags;
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (m_SendPacketNum, nonce);
 		uint8_t payload[SSU2_MAX_PACKET_SIZE];
 		m_Server.AEADChaCha20Poly1305Encrypt (buf, len, header.buf, 16, m_KeyDataSend, nonce, payload, SSU2_MAX_PACKET_SIZE);
@@ -1749,7 +1749,7 @@ namespace transport
 		uint8_t payload[SSU2_MAX_PACKET_SIZE]{};
 		size_t payloadSize = len - 32;
 		uint32_t packetNum = be32toh (header.h.packetNum);
-		uint8_t nonce[12];
+		uint8_t nonce[12]{};
 		CreateNonce (packetNum, nonce);
 		if (!m_Server.AEADChaCha20Poly1305Decrypt (buf + 16, payloadSize, header.buf, 16,
 			m_KeyDataReceive, nonce, payload, payloadSize))
@@ -3316,7 +3316,7 @@ namespace transport
 
 	void SSU2Session::SendTermination ()
 	{
-		uint8_t payload[32];
+		uint8_t payload[32]{};
 		size_t payloadSize = CreateTerminationBlock (payload, 32);
 		payloadSize += CreatePaddingBlock (payload + payloadSize, 32 - payloadSize);
 		SendData (payload, payloadSize);

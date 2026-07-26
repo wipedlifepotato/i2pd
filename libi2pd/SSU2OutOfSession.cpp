@@ -51,7 +51,7 @@ namespace transport
 		// decrypt and handle payload
 		uint8_t * payload = buf + 32;
 		CreateNonce (be32toh (header.h.packetNum), nonce);
-		uint8_t h[32];
+		uint8_t h[32]{};
 		memcpy (h, header.buf, 16);
 		memcpy (h + 16, &headerX, 16);
 		if (!i2p::crypto::AEADChaCha20Poly1305 (payload, len - 48, h, 32,
@@ -181,7 +181,7 @@ namespace transport
 			msg, eSSU2PeerTestCodeAccept, nullptr, m_SignedData.data (), m_SignedData.size ());
 		payloadSize += CreatePaddingBlock (payload + payloadSize, GetMaxPayloadSize () - payloadSize);
 		// encrypt
-		uint8_t n[12];
+		uint8_t n[12]{};
 		CreateNonce (be32toh (header.h.packetNum), n);
 		i2p::crypto::AEADChaCha20Poly1305 (payload, payloadSize, h, 32, addr->i, n, payload, payloadSize + 16, true);
 		payloadSize += 16;
@@ -302,7 +302,7 @@ namespace transport
 		}
 		payloadSize += CreatePaddingBlock (payload + payloadSize, GetMaxPayloadSize () - payloadSize);
 		// encrypt
-		uint8_t n[12];
+		uint8_t n[12]{};
 		CreateNonce (be32toh (header.h.packetNum), n);
 		i2p::crypto::AEADChaCha20Poly1305 (payload, payloadSize, h, 32, addr->i, n, payload, payloadSize + 16, true);
 		payloadSize += 16;

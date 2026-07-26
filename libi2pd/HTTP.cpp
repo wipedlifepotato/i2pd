@@ -85,7 +85,7 @@ namespace http
 
 	void gen_rfc7231_date(std::string & out) {
 		std::time_t now = std::time(nullptr);
-		char buf[128];
+		char buf[128]{};
 		std::tm *tm = std::gmtime(&now);
 		snprintf(buf, sizeof(buf), "%s, %02d %s %d %02d:%02d:%02d GMT",
 			weekdays[tm->tm_wday], tm->tm_mday, months[tm->tm_mon],

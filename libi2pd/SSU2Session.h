@@ -225,13 +225,13 @@ namespace transport
 			union Header
 			{
 				uint64_t ll[2];
-				uint8_t buf[16];
+				uint8_t buf[16]{};
 				struct
 				{
 					uint64_t connID;
 					uint32_t packetNum;
 					uint8_t type;
-					uint8_t flags[3];
+					uint8_t flags[3]{};
 				} h;
 			};
 
@@ -240,7 +240,7 @@ namespace transport
 			struct HandshakePacket
 			{
 				Header header;
-				uint8_t headerX[48]; // part1 for SessionConfirmed
+				uint8_t headerX[48]{}; // part1 for SessionConfirmed
 				uint8_t payload[SSU2_MAX_PACKET_SIZE*2];
 				size_t payloadSize = 0;
 				uint64_t sendTime = 0; // in milliseconds

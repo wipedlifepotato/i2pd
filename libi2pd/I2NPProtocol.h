@@ -187,7 +187,7 @@ namespace tunnel
 		void SetChks (uint8_t chks) { GetHeader ()[I2NP_HEADER_CHKS_OFFSET] = chks; };
 		void UpdateChks ()
 		{
-			uint8_t hash[32];
+			uint8_t hash[32]{};
 			SHA256(GetPayload (), GetPayloadLength (), hash);
 			GetHeader ()[I2NP_HEADER_CHKS_OFFSET] = hash[0];
 		}

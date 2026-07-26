@@ -44,7 +44,7 @@ namespace crypto
 
 		private:
 
-			uint8_t m_PublicKey[256];
+			uint8_t m_PublicKey[256]{};
 	};
 
 	class ElGamalDecryptor: public CryptoKeyDecryptor // for destination
@@ -57,7 +57,7 @@ namespace crypto
 
 		private:
 
-			uint8_t m_PrivateKey[256];
+			uint8_t m_PrivateKey[256]{};
 	};
 
 // ECIES P256
@@ -139,7 +139,7 @@ namespace crypto
 
 		private:
 
-			uint8_t m_PublicKey[32];
+			uint8_t m_PublicKey[32]{};
 	};
 
 	class ECIESX25519AEADRatchetDecryptor: public CryptoKeyDecryptor
